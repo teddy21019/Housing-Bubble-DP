@@ -5,6 +5,7 @@ The initial code for detecting housing bubble can be found in my medium post:
 
 [Housing Bubbles in History — A Detection Using Python](https://medium.com/@ted21019/housing-bubbles-in-history-a-detection-using-python-c959261c5b35)
 
+[Initial code](https://gist.github.com/teddy21019/96454b50ac361476d6eafa89cb5635fb#file-housing_bubble-ipynb)
 ## Problem with the original code
 1. Hard to extend to different data source
 
