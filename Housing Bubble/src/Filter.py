@@ -1,13 +1,11 @@
 from abc import ABC, abstractmethod
+from typing import Callable, Any
 import pandas as pd
 class FilterLayer(ABC):
 
-    @abstractmethod
-    def validate(self) -> None:
-        ...
 
     @abstractmethod
-    def get_data(self, df:pd.DataFrame) -> pd.DataFrame:
+    def get_filter_func(self) -> Callable[... , pd.DataFrame]:
         ...
 
 
