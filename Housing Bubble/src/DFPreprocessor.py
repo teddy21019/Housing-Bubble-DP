@@ -1,14 +1,13 @@
+from __future__ import annotations
 from abc import ABC, abstractmethod
 import pandas as pd
-from src.DataLoader import DataLoader
-from typing import List
+from typing import Callable, List
+from src.typing_alias import DataPipe
 
-
-class DFLoader(ABC):
+class BubbleDataFrameLoader(ABC):
     """
         Abstract class for pd.Dataframe loader
     """
-    data_loader : DataLoader
 
     @abstractmethod
     def get_dataframe(self) -> pd.DataFrame:
@@ -16,26 +15,25 @@ class DFLoader(ABC):
         Returns the dataframe associated with the given data_loader
         """
         ...
+    
+    @abstractmethod
+    def pre_transform(self, pipe_function) -> pd.DataFrame:
+        ...
 
     @abstractmethod
     def set_time_price(self, time_column:str, price_column:str):
        pass 
 
 
-    @abstractmethod
-    def validated(self):
-        pass
-
-
-
-class JST_DFLoader(DFLoader):
+class JSTDataFrameLoader(BubbleDataFrameLoader):
     """
     Reads an JST macroeconomic database and filters the 
     information based on the country and extracts the time and price column
     """
     def __init__(self, 
-                data_loader : DataLoader, 
-                country: str) -> None:
+                data_path: str,
+                country: str):
+
         """
             The constructor of a Dataframe loader specifically for 
             the JST database.
@@ -45,7 +43,7 @@ class JST_DFLoader(DFLoader):
             ==========
             data_loader : DataLoader
                 The DataLoader class that loads the JST database.
-                This functionality is extracted in case the formot of the 
+                This functionality is extracted in case the format of the 
                 JST database is altered in the future for some reason. 
             
             country: str 
@@ -56,38 +54,28 @@ class JST_DFLoader(DFLoader):
                 Note that one might need to do some transformation, i.e. deflation or 
                 getting the percentage change before assigning. 
         """
-        self.data_loader = data_loader
-        self.df = self.data_loader.read_file()
+        self.df = pd.read_excel(data_path, engine='openpyxl', sheet_name='Data')
         self.df = self.df[self.df['iso'] == country]
 
-        self.column_changed = False
 
 
-    @abstractmethod
-    def pre_transform(self):
-        pass 
 
-    def set_time_price(self, time_column:str, price_column:str):
+    def pre_transform(self, pipe_function:DataPipe) -> JSTDataFrameLoader:
+        self.df = pipe_function(self.df)
+        return self
+
+    def set_time_price(self, time_column:str, price_column:str) -> JSTDataFrameLoader:
         rename_dict = {
             time_column:"time",
             price_column:"price"
         }
 
-        self.df:pd.DataFrame = self.df[[time_column, price_column]].rename(rename_dict)
-        self.column_changed = True
+        self.df:pd.DataFrame = self.df[[time_column, price_column]].rename(columns = rename_dict)
         return self
 
     def get_dataframe(self) -> pd.DataFrame:  
-
-        if not self.column_changed:
-            raise ColumnNotSetException(
-                [col_name for col_name in ["time", "price"] 
-                    if col_name not in self.df.columns
-                ]
-            )
-        
-
         return self.df
+    
 
 
 class ColumnNotSetException(Exception):
