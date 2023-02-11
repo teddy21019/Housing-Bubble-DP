@@ -77,7 +77,6 @@ class JSTDataFrameLoader(BubbleDataFrameLoader):
         return self.df
     
 
-
 class ColumnNotSetException(Exception):
     def __init__(self, lack_column:List[str]):
         message = "Column not set : " + ",".join(lack_column)

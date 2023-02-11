@@ -1,41 +1,43 @@
 from functools import partial
-import pandas as pd
-import numpy as np
-from src.DFPreprocessor import JSTDataFrameLoader
-from src.BubbleDetector import BubbleDetector
+from matplotlib import pyplot as plt
+
+from src.JST.preprocessing import createRealPrice
+from src.df_preprocessor import JSTDataFrameLoader
+from src.bubble_detector import BubbleDetector
+from src.presenter import GraphBubble, ListBubble
 from src.Filter import HPFilter
-from typing import List
 
-jst_file_path = "data\JSTdatasetR5.xlsx"
 
-def createRealPrice(dat: pd.DataFrame, nomvar: str):       # nomvar is the nominal variable in the dataset
-    dat = dat[
-        dat[nomvar].notnull() 
-    ].copy()
-    real_price_colname = "real_" + nomvar
-    dat[real_price_colname] = np.log(dat[nomvar]/dat['cpi']) 
-
-    return dat
+jst_file_path = "data/JSTdatasetR5.xlsx"
 
 
 def main():
 
-    country_code = 'USA'
+    fig, ax = plt.subplots(1, 1, figsize=(5, 7))
+    country_code = 'SWE'
+    create_real_gdp_fn = partial(createRealPrice, nomvar='hpnom')
 
-    df_loader = JSTDataFrameLoader(data_path=jst_file_path,
-                                    country=country_code)   \
-                .pre_transform(partial(createRealPrice, nomvar='gdp'))       \
-                .set_time_price(
-                    time_column='year', 
-                    price_column='real_gdp'
-                    )
+    df_loader = JSTDataFrameLoader(
+        data_path=jst_file_path,
+        country=country_code)
+    
+    df_loader.pre_transform(create_real_gdp_fn)       \
+            .set_time_price(time_column='year', price_column='real_hpnom')
 
-    trend_filter = HPFilter(llambda = 100, freq='Y')
+    trend_filter = HPFilter(llambda = 100)
 
     bubble = BubbleDetector(df_loader.get_dataframe(), trend_filter)
+    
+    presenter = GraphBubble(bubble, axis=ax, start_index=1985, end_index=1995)\
+        .set_axis_name(x='year', y='price')\
+        .set_title("Housing price for USA, 2001-2011")
+    # presenter = ListBubble(bubble)
 
-    print(bubble.bubble_df)
-   ## Do something about bubble 
+    presenter.present()
+
+    plt.show()
+
+
 
 
 

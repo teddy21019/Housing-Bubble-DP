@@ -1,7 +1,6 @@
 import pandas as pd
 from src.Filter import FilterLayer
 
-
 class BubbleDetector:
     def __init__(self, df:pd.DataFrame, filter: FilterLayer) -> None:
         
