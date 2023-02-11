@@ -1,7 +1,7 @@
 
-from src.DFPreprocessor import BubbleDataFrameLoader
+from src.df_preprocessor import BubbleDataFrameLoader
 import pandas as pd
-from src.Filter import FilterLayer
+from src.filter import FilterLayer
 
 
 class BubbleDetector:
