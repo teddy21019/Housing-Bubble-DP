@@ -31,7 +31,7 @@ def main():
 
     trend_filter = HPFilter(llambda = 100, freq='Y')
 
-    bubble = BubbleDetector(df_loader, trend_filter)
+    bubble = BubbleDetector(df_loader.get_dataframe(), trend_filter)
 
     print(bubble.bubble_df)
    ## Do something about bubble 

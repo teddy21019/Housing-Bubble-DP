@@ -1,19 +1,15 @@
-
-from src.DFPreprocessor import BubbleDataFrameLoader
 import pandas as pd
 from src.Filter import FilterLayer
 
 
 class BubbleDetector:
-    def __init__(self, bubble_df_loader: BubbleDataFrameLoader, filter: FilterLayer) -> None:
+    def __init__(self, df:pd.DataFrame, filter: FilterLayer) -> None:
         
-        self.bubble_df_loader = bubble_df_loader
+
+        self.df = df
         self.filter = filter
 
-        # extract the processed data from df_loader
-        self.df = self.bubble_df_loader.get_dataframe()
-
-        if not self.validate():
+        if not self.validate(self.df):
             raise ValueError("Bubble dataframe loader returns invalidated structure. Must have both columns named \"time\" and \"price\"")
         
         self.bubble_df = self.generate_bubble()
@@ -27,9 +23,9 @@ class BubbleDetector:
         dat['is_bubble'] = dat["price"] > dat['upper']
         return dat
 
-
-    def validate(self):
-        if not {'time', 'price'}.issubset(set(self.df.columns)):
+    @staticmethod
+    def validate(df:pd.DataFrame):
+        if not {'time', 'price'}.issubset(set(df.columns)):
             return False
         return True
 
