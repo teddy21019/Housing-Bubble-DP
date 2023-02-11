@@ -21,6 +21,7 @@ def createRealPrice(dat: pd.DataFrame, nomvar: str):       # nomvar is the nomin
 def main():
 
     country_code = 'USA'
+
     df_loader = JSTDataFrameLoader(data_path=jst_file_path,
                                     country=country_code)   \
                 .pre_transform(partial(createRealPrice, nomvar='gdp'))       \
