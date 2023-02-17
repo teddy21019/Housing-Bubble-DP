@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 from src.JST.preprocessing import createRealPrice
 from src.df_preprocessor import JSTDataFrameLoader
 from src.bubble_detector import BubbleDetector
-from src.presenter import GraphBubble, ListBubble
+from src.presenter import GraphBubble, ListBubble, APIBubble
 from src.Filter import HPFilter
 
 
@@ -28,14 +28,15 @@ def main():
 
     bubble = BubbleDetector(df_loader.get_dataframe(), trend_filter)
     
-    presenter = GraphBubble(bubble, axis=ax, start_index=1985, end_index=1995)\
-        .set_axis_name(x='year', y='price')\
-        .set_title("Housing price for USA, 2001-2011")
+    # presenter = GraphBubble(bubble, axis=ax, start_index=1985, end_index=1995)\
+    #     .set_axis_name(x='year', y='price')\
+    #     .set_title("Housing price for USA, 2001-2011")
     # presenter = ListBubble(bubble)
+    presenter = APIBubble(bubble)
 
     presenter.present()
 
-    plt.show()
+    # plt.show()
 
 
 

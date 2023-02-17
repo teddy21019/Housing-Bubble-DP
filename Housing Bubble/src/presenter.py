@@ -69,4 +69,10 @@ class ListBubble(BubblePresenter):
         bubble_period = df[df.is_bubble == True]
 
         period_strings = [str(t) for t in bubble_period['time']]
-        print("Bubble period:" + ', '.join(period_strings))
+        return("Bubble period:" + ', '.join(period_strings))
+
+class APIBubble(BubblePresenter):
+    def present(self):
+        df_json = self.bubble.bubble_df.to_json(orient='index')
+        return df_json
+        
