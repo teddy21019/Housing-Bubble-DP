@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import Self
 from src.bubble_detector import BubbleDetector
 import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objects as go
 
 class BubblePresenter(ABC):
     def __init__(self, bubble: BubbleDetector): 
@@ -61,6 +64,77 @@ class GraphBubble(BubblePresenter):
                     ha='center') 
 
         return ax
+
+class PlotlyBubble(BubblePresenter):
+
+    def __init__(self, bubble: BubbleDetector, 
+        start_index, end_index):
+        super().__init__(bubble) 
+        self.start_index = str(start_index)
+        self.end_index = str(end_index)
+
+    def set_title(self, title: str) -> Self:
+        self.plot_title = title
+        return self
+
+    def set_axis_name(self, x:str, y:str) -> Self:
+        self.x_name = x
+        self.y_name = y
+        return self
+
+    def present(self):
+        plot_df = self.bubble.bubble_df
+
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Scatter(
+            name = 'Price',
+            x = plot_df['time'],
+            y = plot_df['price'],
+            line = {
+                'color': 'blue'
+            }
+        ))
+
+        fig.add_trace(
+            go.Scatter(
+                name = 'lower bound',
+                x = plot_df['time'],
+                y = plot_df['lower'],
+                marker={
+                    'opacity': 0
+                },
+                line={
+                    'color': 'rgba(255, 0, 0, 0.1)'
+                },
+                showlegend=False
+            ))
+
+
+        fig.add_trace(
+            go.Scatter(
+                name = 'upper bound',
+                x = plot_df['time'],
+                y = plot_df['upper'],
+                marker={
+                    'opacity':0
+                },
+                line={
+                    'color': 'rgba(255, 0, 0, 0.1)'
+                },
+                fill = 'tonexty',
+                fillcolor= 'rgba(255, 0, 0, 0.1)',
+                showlegend=False
+                )
+        )
+        # text_df = df.
+        
+
+        fig.update_xaxes(range=[self.start_index, self.end_index])
+        return fig
+
+
 
 
 class ListBubble(BubblePresenter):
