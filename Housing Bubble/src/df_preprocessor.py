@@ -31,7 +31,7 @@ class JSTDataFrameLoader(BubbleDataFrameLoader):
     information based on the country and extracts the time and price column
     """
     def __init__(self, 
-                data_path: str,
+                jst_df: pd.DataFrame ,
                 country: str):
 
         """
@@ -54,7 +54,7 @@ class JSTDataFrameLoader(BubbleDataFrameLoader):
                 Note that one might need to do some transformation, i.e. deflation or 
                 getting the percentage change before assigning. 
         """
-        self.df = pd.read_excel(data_path, engine='openpyxl', sheet_name='Data')
+        self.df = jst_df 
         self.df = self.df[self.df['iso'] == country]
 
 
